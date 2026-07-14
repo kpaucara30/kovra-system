@@ -1,0 +1,106 @@
+﻿@import url("./app/base.css");
+@import url("./app/login.css");
+@import url("./app/layout.css");
+@import url("./app/dashboard.css?v=reports-filter-below-charts-1");
+@import url("./app/invoices.css?v=invoice-categories-bulk-delete-1");
+@import url("./app/users.css?v=users-table-design-1");
+@import url("./app/modals.css?v=user-modal-fit-5");
+@import url("./app/settings.css?v=users-settings-roles-1");
+@import url("./app/trash.css");
+@import url("./app/system-scale.css?v=users-table-positions-4");
+
+body:not([data-admin="true"]) [data-admin-only] {
+  display: none !important;
+}
+
+.app-loading-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: grid;
+  place-items: center;
+  padding: 28px;
+  background:
+    radial-gradient(circle at 24% 24%, rgba(79, 70, 229, 0.16), transparent 34%),
+    linear-gradient(135deg, #f4f7ff 0%, #f8fbff 48%, #eef3ff 100%);
+}
+
+.app-loading-card {
+  width: min(360px, 100%);
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+  padding: 34px 32px;
+  border: 1px solid #dfe6f1;
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: 0 24px 70px rgba(15, 23, 42, 0.14);
+  text-align: center;
+}
+
+.loading-brand-mark {
+  width: 46px;
+  height: 46px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  background: #4f46e5;
+  color: #ffffff;
+  font-weight: 900;
+}
+
+.app-loading-card strong {
+  color: #07142b;
+  font-size: 24px;
+  line-height: 1;
+}
+
+.app-loading-card span {
+  margin-top: 4px;
+  color: #17233c;
+  font-size: 15px;
+  font-weight: 900;
+}
+
+.app-loading-card small {
+  color: #64748b;
+  font-size: 12px;
+}
+
+.loading-progress {
+  width: 100%;
+  height: 5px;
+  overflow: hidden;
+  margin-top: 8px;
+  border-radius: 999px;
+  background: #edf2ff;
+}
+
+.loading-progress i {
+  display: block;
+  width: 42%;
+  height: 100%;
+  border-radius: inherit;
+  background: #4f46e5;
+  animation: loading-slide 1s ease-in-out infinite;
+}
+
+body:not(.booting) .app-loading-screen {
+  display: none;
+}
+
+body.booting {
+  overflow: hidden;
+}
+
+body.booting .login-screen,
+body.booting .sidebar,
+body.booting .app-shell {
+  visibility: hidden;
+}
+
+@keyframes loading-slide {
+  0% { transform: translateX(-110%); }
+  50% { transform: translateX(70%); }
+  100% { transform: translateX(260%); }
+}

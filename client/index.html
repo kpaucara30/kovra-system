@@ -1,0 +1,1300 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FactuIA | Control de Facturas</title>
+  <link rel="stylesheet" href="assets/css/styles.css?v=reports-filter-below-charts-1" />
+  </head>
+  <body class="booting">
+    <section class="app-loading-screen" id="app-loading-screen" aria-live="polite" aria-label="Cargando sistema">
+      <div class="app-loading-card">
+        <div class="loading-brand-mark">IA</div>
+        <strong>FactuIA</strong>
+        <span>Cargando sistema...</span>
+        <small>Verificando sesion segura</small>
+        <div class="loading-progress" aria-hidden="true"><i></i></div>
+      </div>
+    </section>
+
+    <section class="login-screen" id="login-screen">
+      <div class="login-shell">
+        <aside class="login-visual">
+          <div class="login-brand-mini">
+            <span class="login-dot"></span>
+            <strong>FactuIA</strong>
+          </div>
+          <div class="login-quote">
+            <strong>"Gestion de facturas con IA en un solo sistema."</strong>
+            <span>Control, validacion y reportes para tu empresa.</span>
+          </div>
+        </aside>
+
+        <form class="login-card" id="login-form">
+          <div class="login-heading">
+            <div class="brand-mark">IA</div>
+            <p>Bienvenido de nuevo</p>
+            <h1>Ingresar al sistema</h1>
+            <span>Accede para procesar facturas, validar datos y revisar reportes.</span>
+          </div>
+          <label>Usuario
+            <input id="login-username" value="admin" autocomplete="username" />
+          </label>
+          <label>Contrasena
+            <span class="password-field">
+              <input id="login-password" type="password" value="123456" autocomplete="current-password" />
+              <button class="icon-button small" id="toggle-login-password" type="button" aria-label="Mostrar contrasena">Ver</button>
+            </span>
+          </label>
+          <div class="login-options">
+            <label class="remember-option">
+              <input type="checkbox" checked />
+              Recordarme
+            </label>
+            <button class="link-button" id="recover-access" type="button">Recuperar acceso</button>
+          </div>
+          <button class="primary-button full" type="submit">Ingresar</button>
+          <div class="login-divider"><span>Acceso inicial</span></div>
+          <button class="ghost-button full" type="button">admin / 123456</button>
+          <div class="process-state" id="login-state">Usuario inicial: admin / 123456</div>
+        </form>
+      </div>
+    </section>
+
+    <aside class="sidebar">
+      <div class="brand system-logo-brand">
+        <img class="system-logo-image" src="assets/img/logo_sistema_letra_menu.png" alt="KOVRA" />
+      </div>
+
+      <nav class="nav" aria-label="Navegacion principal">
+        <button class="nav-item active" data-view="dashboard"><span class="nav-icon"><img src="assets/img/Dashboard.svg" alt="" /></span>Dashboard</button>
+        <button class="nav-item" data-view="upload"><span class="nav-icon"><img src="assets/img/Procesar_Facturas.svg" alt="" /></span>Procesar Facturas</button>
+        <button class="nav-item" data-view="invoices"><span class="nav-icon"><img src="assets/img/Facturas.svg" alt="" /></span>Facturas</button>
+        <button class="nav-item" data-view="reports"><span class="nav-icon"><img src="assets/img/Reportes.ico" alt="" /></span>Reportes</button>
+        <button class="nav-item" data-view="trash" data-admin-only><span class="nav-icon"><img src="assets/img/papelera.ico" alt="" /></span>Papelera</button>
+        <button class="nav-item" data-view="users" data-admin-only><span class="nav-icon"><img src="assets/img/Usuarios.svg" alt="" /></span>Usuarios</button>
+        <button class="nav-item" data-view="settings"><span class="nav-icon"><img src="assets/img/configuracion.svg" alt="" /></span>Configuracion</button>
+      </nav>
+
+      <div class="user-card">
+        <span class="session-avatar" id="session-avatar">AP</span>
+        <div>
+          <strong id="session-name">Administrador</strong>
+          <small id="session-email">admin@pyme.pe</small>
+        </div>
+        <div class="session-menu-wrap">
+          <button class="icon-button logout-button" id="session-menu-button" type="button" aria-label="Opciones de sesion" aria-expanded="false">...</button>
+          <div class="session-menu hidden" id="session-menu">
+            <button type="button" id="logout-button">Cerrar sesion</button>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <main class="app-shell">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Sistema de gestion y analisis de facturas de gastos</p>
+          <h1 id="page-title">Dashboard</h1>
+        </div>
+        <div class="top-actions"></div>
+        <div class="global-search hidden" id="global-search">
+          <input id="global-search-input" placeholder="Buscar facturas, proveedores, RUC o numero" />
+          <div class="global-search-results" id="global-search-results"></div>
+        </div>
+      </header>
+
+      <section id="dashboard" class="view active-view">
+        <section class="dashboard-page">
+          <div class="dashboard-welcome app-section-header">
+            <div>
+              <h2>Dashboard</h2>
+              <p>Bienvenido, <span id="dashboard-user-name">Admin</span>. Aqui tienes un resumen general de tus facturas y gastos.</p>
+            </div>
+            <div class="dashboard-period">
+              <span id="dashboard-date-range">Periodo actual</span>
+            </div>
+          </div>
+
+          <div class="dashboard-metrics invoice-metrics">
+            <article class="metric invoice-metric purple accent-blue">
+              <span class="dashboard-metric-icon invoice-metric-icon"><img src="assets/img/total_factura.png" alt="" /></span>
+              <div class="dashboard-metric-content">
+                <span>Total de facturas</span>
+                <strong id="metric-count">0</strong>
+                <small id="metric-count-note">Facturas registradas</small>
+              </div>
+            </article>
+            <article class="metric invoice-metric green accent-green">
+              <span class="dashboard-metric-icon invoice-metric-icon"><img src="assets/img/monto_total.png" alt="" /></span>
+              <div class="dashboard-metric-content">
+                <span>Monto total</span>
+                <strong id="metric-total">0.00</strong>
+                <small id="metric-total-note">Monto de todas las facturas</small>
+              </div>
+            </article>
+            <article class="metric invoice-metric blue accent-purple">
+              <span class="dashboard-metric-icon invoice-metric-icon"><img src="assets/img/igv_total.png" alt="" /></span>
+              <div class="dashboard-metric-content">
+                <span>IGV total</span>
+                <strong id="metric-igv">S/ 0.00</strong>
+                <small>Impuesto acumulado</small>
+              </div>
+            </article>
+            <article class="metric invoice-metric orange accent-orange">
+              <span class="dashboard-metric-icon invoice-metric-icon"><img src="assets/img/proveedores.png" alt="" /></span>
+              <div class="dashboard-metric-content">
+                <span>Proveedores</span>
+                <strong id="metric-providers">0</strong>
+                <small>Proveedores distintos</small>
+              </div>
+            </article>
+          </div>
+
+          <div class="dashboard-analytics-grid">
+            <section class="panel dashboard-chart-card dashboard-month-card">
+              <div class="panel-header">
+                <h2>Gastos por mes</h2>
+                <select id="dashboard-range">
+                  <option>Ultimos 6 meses</option>
+                  <option>Todo el año</option>
+                </select>
+              </div>
+              <div class="dashboard-line-chart" id="monthly-chart"></div>
+            </section>
+
+            <section class="panel dashboard-chart-card dashboard-category-card">
+              <h2>Gastos por categoria</h2>
+              <div class="dashboard-donut-wrap">
+                <div class="dashboard-donut" id="category-donut"><span>Total<br />S/ 0.00</span></div>
+                <div class="category-list dashboard-category-list" id="category-list"></div>
+              </div>
+            </section>
+
+            <section class="panel dashboard-chart-card dashboard-provider-card">
+                <h2>Top 5 proveedores por monto</h2>
+              <div class="dashboard-provider-list" id="top-providers"></div>
+            </section>
+          </div>
+
+          <div class="dashboard-detail-grid">
+            <section class="panel dashboard-recent-panel">
+              <div class="panel-header">
+                <h2>Facturas recientes</h2>
+                <button class="link-button" data-view-target="invoices" type="button">Ver todas</button>
+              </div>
+              <div class="dashboard-recent-table-wrap">
+                <table class="dashboard-recent-table">
+                  <thead>
+                    <tr>
+                      <th>N°</th>
+                      <th>Factura</th>
+                      <th>Proveedor</th>
+                      <th>Fecha</th>
+                      <th>Categoria</th>
+                      <th>Total</th>
+                      <th>Estado</th>
+                      <th>Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody id="dashboard-recent-invoices"></tbody>
+                </table>
+              </div>
+            </section>
+
+            <section class="panel dashboard-actions-card">
+              <h2>Acciones rapidas</h2>
+              <div class="dashboard-quick-actions">
+                <button class="dashboard-action excel" data-dashboard-report-action="excel" type="button"><span>XLS</span>Exportar a Excel</button>
+                <button class="dashboard-action pdf" data-dashboard-report-action="pdf" type="button"><span>PDF</span>Exportar a PDF</button>
+                <button class="dashboard-action print" data-dashboard-report-action="print" type="button"><span>IMP</span>Imprimir reporte</button>
+              </div>
+            </section>
+          </div>
+        </section>
+      </section>
+
+      <section id="upload" class="view">
+        <section class="panel upload-stage">
+          <div class="breadcrumb">Inicio / Procesar Facturas</div>
+          <div class="upload-steps" aria-label="Flujo de procesamiento">
+            <div class="step active"><strong>1</strong><span>Subir</span></div>
+            <div class="step"><strong>2</strong><span>Procesar</span></div>
+            <div class="step"><strong>3</strong><span>Validar</span></div>
+            <div class="step"><strong>4</strong><span>Guardar</span></div>
+          </div>
+
+          <input id="batch-company" type="hidden" value="" />
+          <input id="batch-period" type="hidden" value="" />
+
+          <label class="dropzone modern-dropzone" for="invoice-file">
+            <input id="invoice-file" type="file" accept=".pdf,.jpg,.jpeg,.png" multiple />
+            <span class="upload-cloud" aria-hidden="true"></span>
+            <strong id="dropzone-title">Arrastra tus archivos o carpeta aqui</strong>
+            <small>Soporta PDF, JPG, PNG</small>
+            <span class="dropzone-actions">
+              <button id="pick-files-button" class="primary-button" type="button">Seleccionar archivos</button>
+              <button id="pick-folder-button" class="ghost-button" type="button">Seleccionar carpeta</button>
+            </span>
+          </label>
+          <input id="folder-file" class="hidden-input" type="file" accept=".pdf,.jpg,.jpeg,.png" webkitdirectory directory multiple />
+
+          <div class="file-details file-list-card" id="file-details">
+            <strong>Sin archivos seleccionados</strong>
+            <small>Selecciona una factura o una carpeta para iniciar.</small>
+          </div>
+
+          <div class="upload-footer-actions single-action">
+            <button id="process-button" class="primary-button">Procesar archivos</button>
+          </div>
+          <div class="process-state hidden" id="process-state"></div>
+          <div class="process-state hidden" id="ocr-status"></div>
+
+          <div class="sr-preview" aria-hidden="true">
+            <div class="invoice-preview" id="upload-preview">
+              <strong>FACTURA ELECTRONICA</strong>
+              <span>RUC 20481234567</span>
+              <hr />
+              <p>Proveedor: Servicios Lima SAC</p>
+              <p>Fecha: 15/05/2026</p>
+              <p>Total: S/ 1,280.00</p>
+            </div>
+          </div>
+        </section>
+      </section>
+
+      <section id="processing" class="view">
+        <section class="panel flow-card">
+          <div class="breadcrumb">Inicio / Procesar Facturas / Procesar</div>
+          <div class="upload-steps" aria-label="Flujo de procesamiento">
+            <div class="step done"><strong></strong><span>Subir</span></div>
+            <div class="step active"><strong>2</strong><span>Procesar</span></div>
+            <div class="step"><strong>3</strong><span>Validar</span></div>
+            <div class="step"><strong>4</strong><span>Guardar</span></div>
+          </div>
+          <div class="processing-box">
+            <h2>Procesando facturas con IA...</h2>
+            <p>Extrayendo informacion de cada documento.</p>
+            <div class="progress-bar"><span id="ocr-progress"></span></div>
+            <strong id="ocr-progress-label">0%</strong>
+            <div class="process-list" id="ocr-file-list"></div>
+          </div>
+        </section>
+      </section>
+
+      <section id="validate" class="view">
+        <section class="panel validation-stage">
+          <div class="breadcrumb">Inicio / Procesar Facturas / Validar</div>
+          <div class="upload-steps" aria-label="Flujo de procesamiento">
+            <div class="step done"><strong></strong><span>Subir</span></div>
+            <div class="step done"><strong></strong><span>Procesar</span></div>
+            <div class="step active"><strong>3</strong><span>Validar</span></div>
+            <div class="step"><strong>4</strong><span>Guardar</span></div>
+          </div>
+
+          <div class="validation-grid single">
+            <section class="extracted-panel">
+              <div class="panel-header stacked">
+                <div>
+                  <h2>Facturas extraidas <span id="validation-count">(1)</span></h2>
+                </div>
+                <div class="filters validation-filters">
+                  <input id="validation-search" placeholder="Buscar por RUC, proveedor o numero" />
+                  <select id="validation-filter">
+                    <option value="Todos">Todos los estados</option>
+                    <option value="Validado">Validado</option>
+                    <option value="Pendiente">Pendiente</option>
+                    <option value="Observado">Observado</option>
+                    <option value="Duplicado">Duplicado</option>
+                  </select>
+                </div>
+              </div>
+              <div class="validation-table-wrap">
+                <table class="validation-table">
+                  <thead>
+                    <tr>
+                      <th>Numero</th>
+                      <th>RUC</th>
+                      <th>Proveedor</th>
+                      <th>Fecha</th>
+                      <th>Subtotal</th>
+                      <th>IGV</th>
+                      <th>Total</th>
+                      <th>Confianza</th>
+                      <th>Estado</th>
+                      <th>Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody id="validation-table-body"></tbody>
+                </table>
+              </div>
+            </section>
+          </div>
+
+          <div class="hidden-validation-fields">
+            <input id="form-company" value="Empresa sin asignar" />
+            <input id="form-period" type="month" value="" />
+            <input id="form-subtotal" value="" />
+            <input id="form-igv" value="" />
+            <input id="form-number" value="" />
+            <input id="form-provider" value="" />
+            <input id="form-ruc" value="" maxlength="11" />
+            <input id="form-date" type="date" value="" />
+            <input id="form-total" value="" />
+            <select id="form-category">
+              <option>Compra</option>
+              <option>Servicios</option>
+              <option>Alquiler</option>
+              <option>Transporte</option>
+              <option>Mantenimiento</option>
+              <option>Otros</option>
+            </select>
+            <select id="form-priority">
+              <option>Normal</option>
+              <option>Alta</option>
+              <option>Baja</option>
+            </select>
+            <input id="form-due-date" type="date" />
+            <span id="validation-confidence">Confianza 0%</span>
+            <textarea id="ocr-text" rows="4"></textarea>
+          </div>
+
+          <div class="validation-bottom">
+            <div></div>
+            <button class="primary-button" id="save-invoice" type="button">Guardar</button>
+          </div>
+          <div class="process-state hidden" id="validation-state"></div>
+        </section>
+      </section>
+
+      <div class="modal-backdrop hidden" id="validation-modal" role="dialog" aria-modal="true" aria-labelledby="validation-modal-title">
+        <section class="modal-card validation-modal-card">
+          <div class="modal-header">
+            <div>
+              <h2 id="validation-modal-title">Validar factura extraida</h2>
+            </div>
+            <button class="icon-button modal-close-button" id="close-validation-modal" type="button" aria-label="Cerrar">X</button>
+          </div>
+          <div class="validation-hint hidden" id="validation-hint">
+            <strong id="validation-hint-title">Asistente IA</strong>
+            <span id="validation-hint-text"></span>
+          </div>
+          <div class="modal-grid">
+            <section>
+              <h3>Vista previa del documento</h3>
+              <div class="preview-toolbar" aria-label="Controles de vista previa">
+                <button class="icon-button small" id="preview-zoom-out" type="button" aria-label="Reducir vista">-</button>
+                <span id="preview-zoom-label">100%</span>
+                <button class="icon-button small" id="preview-zoom-in" type="button" aria-label="Agrandar vista">+</button>
+                <button class="ghost-button small" id="preview-zoom-reset" type="button">Restablecer</button>
+                <span class="preview-help" id="preview-page-count">Visor unico</span>
+              </div>
+              <div class="modal-preview" id="validation-preview">
+                <strong>FACTURA</strong>
+              </div>
+            </section>
+            <section>
+              <h3>Datos extraidos</h3>
+              <form class="detail-fields" id="modal-validation-form">
+                <label data-required-field="modal-number">Numero de factura <span class="required hidden">*</span><span class="validated-field"><input id="modal-number" /></span></label>
+                <label data-required-field="modal-ruc">RUC del proveedor <span class="required hidden">*</span><span class="validated-field"><input id="modal-ruc" maxlength="11" /></span></label>
+                <label data-required-field="modal-provider">Razon social del proveedor <span class="required hidden">*</span><span class="validated-field"><input id="modal-provider" /></span></label>
+                <label data-required-field="modal-date">Fecha de emision <span class="required hidden">*</span><span class="validated-field"><input id="modal-date" type="date" /></span></label>
+                <label>Subtotal <span class="validated-field money-field"><span>S/</span><input id="modal-subtotal" inputmode="decimal" /></span></label>
+                <label>IGV <span class="validated-field money-field"><span>S/</span><input id="modal-igv" inputmode="decimal" /></span></label>
+                <label data-required-field="modal-total">Total <span class="required hidden">*</span><span class="validated-field money-field"><span>S/</span><input id="modal-total" inputmode="decimal" /></span></label>
+              </form>
+            </section>
+          </div>
+          <div class="modal-actions">
+            <button class="ghost-button" id="cancel-validation-modal" type="button">Cancelar</button>
+            <button class="primary-button" id="confirm-validation-modal" type="button">Guardar factura</button>
+          </div>
+        </section>
+      </div>
+
+      <div class="confirm-backdrop hidden" id="close-confirm-modal" role="dialog" aria-modal="true">
+        <section class="confirm-card">
+          <button class="icon-button confirm-close" data-confirm-close="close" type="button">X</button>
+          <div class="confirm-icon">?</div>
+          <h2>¿Cerrar el documento?</h2>
+          <p>Hay cambios en los datos extraidos. Si cierras ahora, se perderan los cambios no validados o no guardados.</p>
+          <div class="confirm-actions">
+            <button class="ghost-button" data-confirm-close="close" type="button">No, continuar</button>
+            <button class="primary-button" id="confirm-close-without-save" type="button">Si, cerrar</button>
+          </div>
+        </section>
+      </div>
+
+      <div class="confirm-backdrop hidden" id="save-confirm-modal" role="dialog" aria-modal="true">
+        <section class="confirm-card">
+          <button class="icon-button confirm-close" data-confirm-close="save" type="button">X</button>
+          <div class="confirm-icon">?</div>
+          <h2>¿Estas seguro?</h2>
+          <p>¿Deseas guardar los datos extraidos de esta factura?</p>
+          <div class="confirm-actions">
+            <button class="ghost-button" data-confirm-close="save" type="button">No, cancelar</button>
+            <button class="primary-button" id="confirm-save-data" type="button">Si, guardar</button>
+          </div>
+        </section>
+      </div>
+
+      <div class="confirm-backdrop hidden" id="delete-confirm-modal" role="dialog" aria-modal="true">
+        <section class="confirm-card">
+          <button class="icon-button confirm-close" data-confirm-close="delete" type="button">X</button>
+          <div class="confirm-icon">?</div>
+          <h2>¿Eliminar factura?</h2>
+          <p>¿Estas seguro de eliminar este documento de la lista de facturas extraidas?</p>
+          <div class="confirm-actions">
+            <button class="ghost-button" data-confirm-close="delete" type="button">No, cancelar</button>
+            <button class="primary-button danger-confirm" id="confirm-delete-validation-row" type="button">Si, eliminar</button>
+          </div>
+        </section>
+      </div>
+
+      <div class="confirm-backdrop hidden" id="app-message-modal" role="dialog" aria-modal="true" aria-labelledby="app-message-title">
+        <section class="confirm-card" id="app-message-card">
+          <button class="icon-button confirm-close" id="app-message-close" type="button">X</button>
+          <div class="confirm-icon" id="app-message-icon">?</div>
+          <h2 id="app-message-title">Mensaje</h2>
+          <p id="app-message-text"></p>
+          <div class="confirm-actions">
+            <button class="ghost-button hidden" id="app-message-secondary" type="button">Cancelar</button>
+            <button class="primary-button" id="app-message-primary" type="button">Aceptar</button>
+          </div>
+        </section>
+      </div>
+
+      <div class="modal-backdrop hidden" id="invoice-view-modal" role="dialog" aria-modal="true" aria-labelledby="invoice-view-title">
+        <section class="modal-card invoice-view-card">
+          <div class="modal-header">
+            <div>
+              <h2 id="invoice-view-title">Ver factura</h2>
+              <div class="invoice-view-meta" id="invoice-view-meta"></div>
+            </div>
+            <button class="icon-button modal-close-button" id="close-invoice-view-modal" type="button" aria-label="Cerrar">X</button>
+          </div>
+          <div class="preview-toolbar invoice-preview-toolbar" aria-label="Controles de vista previa">
+            <button class="icon-button small" id="invoice-preview-zoom-out" type="button" aria-label="Reducir vista">-</button>
+            <span id="invoice-preview-zoom-label">100%</span>
+            <button class="icon-button small" id="invoice-preview-zoom-in" type="button" aria-label="Agrandar vista">+</button>
+            <button class="ghost-button small" id="invoice-preview-zoom-reset" type="button">Ajustar ancho</button>
+            <span class="preview-help" id="invoice-preview-page-count">Visor unico</span>
+          </div>
+          <div class="modal-preview invoice-view-preview" id="invoice-file-preview">
+            <strong>Factura</strong>
+          </div>
+          <div class="modal-actions">
+            <button class="primary-button" id="download-viewed-invoice" type="button">Descargar</button>
+            <button class="ghost-button" id="close-viewed-invoice" type="button">Cerrar</button>
+          </div>
+        </section>
+      </div>
+
+      <div class="modal-backdrop hidden" id="user-modal" role="dialog" aria-modal="true" aria-labelledby="user-modal-title">
+        <section class="modal-card user-modal-card">
+          <div class="modal-header">
+            <div>
+              <h2 id="user-modal-title">Nuevo usuario</h2>
+            </div>
+            <button class="icon-button modal-close-button" id="close-user-modal" type="button" aria-label="Cerrar">X</button>
+          </div>
+          <form class="form-grid user-modal-form" id="user-form">
+            <div class="user-photo-field">
+              <div class="user-photo-preview" id="user-photo-preview"><span>AP</span></div>
+              <div class="user-photo-actions">
+                <strong>Imagen del usuario</strong>
+                <small>PNG, JPG o WEBP. Maximo 2 MB.</small>
+                <div>
+                  <button class="ghost-button" id="user-photo-button" type="button">Seleccionar foto</button>
+                  <button class="ghost-button danger" id="user-photo-remove" type="button">Quitar</button>
+                </div>
+              </div>
+              <input id="user-photo-file" type="file" accept="image/png,image/jpeg,image/webp" hidden />
+              <input id="user-photo-data" type="hidden" />
+            </div>
+            <label>Nombres <input id="user-first-names" placeholder="Ejemplo: Kevin" /></label>
+            <label>Apellidos <input id="user-last-names" placeholder="Ejemplo: Paucar Alberto" /></label>
+            <label>DNI <input id="user-dni" inputmode="numeric" maxlength="8" placeholder="12345678" /></label>
+            <label>Fecha de nacimiento <input id="user-birthdate" type="date" /></label>
+            <label>Codigo <input id="user-code" class="generated-field" placeholder="Se genera automaticamente" readonly /></label>
+            <label>Usuario <input id="user-username" class="generated-field" placeholder="Se genera automaticamente" autocomplete="off" readonly /></label>
+            <label>Correo electronico <input id="user-email" type="email" placeholder="ejemplo@empresa.com" /></label>
+            <label>Contrasena
+              <span class="password-field user-password-field">
+                <input id="user-password" type="password" placeholder="Ingresa la contrasena" autocomplete="new-password" />
+                <button class="icon-button small" id="toggle-user-password" type="button" aria-label="Mostrar contrasena">Ver</button>
+              </span>
+            </label>
+            <label>Confirmar contrasena
+              <span class="password-field user-password-field">
+                <input id="user-password-confirm" type="password" placeholder="Confirma la contrasena" autocomplete="new-password" />
+                <button class="icon-button small" id="toggle-user-password-confirm" type="button" aria-label="Mostrar confirmacion">Ver</button>
+              </span>
+            </label>
+            <label>Rol
+              <select id="user-role">
+                <option>Administrador</option>
+                <option>Contador</option>
+              </select>
+            </label>
+            <label>Estado
+              <select id="user-status">
+                <option>Activo</option>
+                <option>Inactivo</option>
+              </select>
+            </label>
+            <div class="role-selected-info">
+              <strong>Informacion del rol seleccionado</strong>
+              <span id="selected-role-info">Administrador: Acceso completo a todas las funcionalidades del sistema.</span>
+            </div>
+            <div class="modal-actions">
+              <button class="ghost-button" id="cancel-user-modal" type="button">Cancelar</button>
+              <button class="primary-button" id="save-user-button" type="submit">Guardar usuario</button>
+            </div>
+          </form>
+          <div class="process-state hidden" id="user-state"></div>
+        </section>
+      </div>
+
+      <section id="save" class="view">
+        <section class="panel flow-card">
+          <div class="breadcrumb">Inicio / Procesar Facturas / Guardar</div>
+          <div class="upload-steps" aria-label="Flujo de procesamiento">
+            <div class="step done"><strong></strong><span>Subir</span></div>
+            <div class="step done"><strong></strong><span>Procesar</span></div>
+            <div class="step done"><strong></strong><span>Validar</span></div>
+            <div class="step active"><strong>4</strong><span>Guardar</span></div>
+          </div>
+          <h2>Guardar facturas validadas</h2>
+          <p>Solo se registraran facturas con validacion completa y sin observaciones.</p>
+          <div class="summary-grid" id="save-summary"></div>
+          <div class="save-options">
+            <label><input id="save-all-option" type="checkbox" checked /> Guardar solamente facturas validadas</label>
+            <label><input id="save-observed-option" type="checkbox" disabled /> Las facturas con errores deben corregirse en validacion</label>
+          </div>
+          <div class="button-row save-actions">
+            <button class="ghost-button" type="button" data-view-target="validate">Anterior</button>
+            <button class="primary-button" id="final-save-button" type="button">Guardar facturas validadas</button>
+          </div>
+        </section>
+      </section>
+
+      <section id="result" class="view">
+        <section class="panel flow-card result-card">
+          <div class="breadcrumb">Inicio / Procesar Facturas / Resultado</div>
+          <div class="result-check">✓</div>
+          <h2>Proceso finalizado</h2>
+          <p>Las facturas se han guardado correctamente.</p>
+          <div class="summary-grid" id="result-summary"></div>
+          <div class="button-row result-actions">
+            <button class="ghost-button" type="button" data-view-target="invoices">Ir a Facturas</button>
+            <button class="primary-button" type="button" data-view-target="upload">Nuevo procesamiento</button>
+          </div>
+        </section>
+      </section>
+
+      <section id="invoices" class="view invoices-view">
+        <div class="invoices-heading app-section-header">
+          <div>
+            <h2>Facturas registradas</h2>
+            <p>Consulta y gestiona todas las facturas registradas en el sistema.</p>
+          </div>
+        </div>
+
+        <div class="invoice-metrics">
+          <article class="invoice-metric purple">
+            <span class="invoice-metric-icon"><img src="assets/img/total_factura.png" alt="" /></span>
+            <div>
+              <span>Total de facturas</span>
+              <strong id="invoice-total-count">0</strong>
+              <small>Facturas registradas</small>
+            </div>
+          </article>
+          <article class="invoice-metric green">
+            <span class="invoice-metric-icon"><img src="assets/img/monto_total.png" alt="" /></span>
+            <div>
+              <span>Monto total</span>
+              <strong id="invoice-total-amount">S/ 0.00</strong>
+              <small>Monto de todas las facturas</small>
+            </div>
+          </article>
+          <article class="invoice-metric blue">
+            <span class="invoice-metric-icon"><img src="assets/img/este_mes.png" alt="" /></span>
+            <div>
+              <span>Este mes</span>
+              <strong id="invoice-month-count">0</strong>
+              <small>Facturas registradas</small>
+            </div>
+          </article>
+          <article class="invoice-metric orange">
+            <span class="invoice-metric-icon"><img src="assets/img/proveedores.png" alt="" /></span>
+            <div>
+              <span>Proveedores</span>
+              <strong id="invoice-provider-count">0</strong>
+              <small>Proveedores distintos</small>
+            </div>
+          </article>
+        </div>
+
+        <section class="invoices-panel">
+          <div class="invoice-toolbar">
+            <label class="invoice-search">
+              <input id="invoice-search" placeholder="Buscar por numero, proveedor o RUC..." />
+              <span>Buscar</span>
+            </label>
+            <label>Mes
+              <select id="invoice-month-filter">
+                <option value="">Todos</option>
+                <option value="01">Enero</option>
+                <option value="02">Febrero</option>
+                <option value="03">Marzo</option>
+                <option value="04">Abril</option>
+                <option value="05">Mayo</option>
+                <option value="06">Junio</option>
+                <option value="07">Julio</option>
+                <option value="08">Agosto</option>
+                <option value="09">Septiembre</option>
+                <option value="10">Octubre</option>
+                <option value="11">Noviembre</option>
+                <option value="12">Diciembre</option>
+              </select>
+            </label>
+            <label>Ano
+              <select id="invoice-year-filter">
+                <option value="">Todos</option>
+              </select>
+            </label>
+            <label>Categoria
+              <select id="invoice-category-filter">
+                <option value="">Todas</option>
+              </select>
+            </label>
+            <button class="ghost-button" id="invoice-clear-filters" type="button">Limpiar</button>
+            <button class="ghost-button invoice-selected-delete-button" id="invoice-delete-selected" type="button" disabled>
+              <img class="invoice-button-icon" src="assets/img/eliminar.png" alt="" />
+              <span>Eliminar seleccionadas</span>
+            </button>
+          </div>
+
+          <div class="table-wrap invoices-table-wrap">
+            <table class="invoices-table">
+              <thead>
+                <tr>
+                  <th><input id="invoice-select-all" type="checkbox" aria-label="Seleccionar todo" /></th>
+                  <th><button class="table-sort-button" type="button" data-invoice-sort="number">Nro Factura</button></th>
+                  <th><button class="table-sort-button" type="button" data-invoice-sort="provider">Proveedor</button></th>
+                  <th><button class="table-sort-button" type="button" data-invoice-sort="ruc">RUC</button></th>
+                  <th><button class="table-sort-button" type="button" data-invoice-sort="date">Fecha de factura</button></th>
+                  <th><button class="table-sort-button" type="button" data-invoice-sort="subtotal">Subtotal</button></th>
+                  <th><button class="table-sort-button" type="button" data-invoice-sort="igv">IGV</button></th>
+                  <th><button class="table-sort-button" type="button" data-invoice-sort="total">Total</button></th>
+                  <th><button class="table-sort-button" type="button" data-invoice-sort="category">Categoria</button></th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="invoice-table"></tbody>
+            </table>
+          </div>
+
+          <div class="invoice-footer">
+            <span id="invoice-result-count">Mostrando 0 resultados</span>
+            <div class="invoice-pagination" id="invoice-pagination" aria-label="Paginacion de facturas"></div>
+          </div>
+        </section>
+      </section>
+
+      <section id="providers" class="view">
+        <div class="content-grid">
+          <section class="panel wide">
+            <div class="panel-header stacked">
+              <div>
+                <h2>Gestion de proveedores</h2>
+                <p>Centraliza RUC, razon social, contacto y categoria.</p>
+              </div>
+              <div class="filters">
+                <input id="provider-search" placeholder="Buscar proveedor o RUC" />
+              </div>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>RUC</th>
+                    <th>Razon social</th>
+                    <th>Categoria</th>
+                    <th>Contacto</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody id="provider-table"></tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="panel">
+            <h2>Nuevo proveedor</h2>
+            <form class="form-grid single" id="provider-form">
+              <label>RUC <input id="provider-ruc" maxlength="11" /></label>
+              <label>Razon social <input id="provider-name" /></label>
+              <label>Categoria <input id="provider-category" value="Servicios" /></label>
+              <label>Contacto <input id="provider-contact" /></label>
+              <label>Telefono <input id="provider-phone" /></label>
+              <label>Correo <input id="provider-email" type="email" /></label>
+              <button class="primary-button full" type="submit">Guardar proveedor</button>
+            </form>
+            <div class="process-state" id="provider-state">Los proveedores tambien se crean al guardar facturas.</div>
+          </section>
+        </div>
+      </section>
+
+      <section id="reports" class="view">
+        <section class="report-page">
+          <div class="section-heading app-section-header">
+            <div>
+              <h2>Reportes de gastos</h2>
+              <p>Analiza tus facturas de gastos por periodo, proveedor, categoria y estado de revision.</p>
+            </div>
+          </div>
+
+          <section class="report-filter-panel report-command-bar" id="report-filter-panel">
+            <div class="filters report-filters">
+              <label>Periodo
+                <span class="report-date-range">
+                  <input id="report-from" type="date" />
+                  <span>-</span>
+                  <input id="report-to" type="date" />
+                </span>
+              </label>
+              <label>Proveedor <input id="report-provider" placeholder="Todos" /></label>
+              <label>Categoria
+                <select id="report-category">
+                  <option value="">Todas</option>
+                  <option value="Compra">Compra</option>
+                  <option value="Servicios">Servicios</option>
+                  <option value="Alquiler">Alquiler</option>
+                  <option value="Transporte">Transporte</option>
+                  <option value="Mantenimiento">Mantenimiento</option>
+                  <option value="Otros">Otros</option>
+                </select>
+              </label>
+              <label class="report-search-field">Buscar
+                <input id="report-search" placeholder="Buscar factura..." />
+              </label>
+              <select id="report-status" class="hidden" aria-hidden="true">
+                <option>Todos</option>
+                <option>Validado</option>
+                <option>Pendiente</option>
+                <option>Observado</option>
+                <option>Duplicado</option>
+              </select>
+              <select id="report-type" class="hidden" aria-hidden="true">
+                <option value="monthly">Mensual</option>
+                <option value="provider">Por proveedor</option>
+                <option value="category">Por categoria</option>
+                <option value="status">Por estado</option>
+                <option value="range">Por rango de fechas</option>
+              </select>
+              <select id="report-period" class="hidden" aria-hidden="true">
+                <option value="custom">Personalizado</option>
+                <option value="current-month">Mes actual</option>
+                <option value="current-year">Año actual</option>
+              </select>
+              <button class="ghost-button" id="report-clear" type="button">Limpiar</button>
+              <button class="primary-button" id="report-apply" type="button">Generar reporte</button>
+            </div>
+          </section>
+
+          <div class="report-tab-panel" id="report-summary-panel">
+            <div class="report-summary" id="report-summary"></div>
+
+            <div class="report-grid report-chart-box">
+              <section class="panel">
+                <div class="report-panel-toolbar">
+                  <h3>Gastos por mes</h3>
+                  <label>Año
+                    <select id="report-chart-year"></select>
+                  </label>
+                </div>
+                <div class="report-month-chart" id="report-month-chart"></div>
+              </section>
+              <section class="panel">
+                <h3>Gastos por proveedor</h3>
+                <div class="provider-report-chart">
+                  <div class="donut-chart" id="report-provider-donut"><span>Total<br />S/ 0.00</span></div>
+                  <div class="provider-legend" id="report-provider-legend"></div>
+                </div>
+              </section>
+            </div>
+
+          </div>
+
+          <div class="report-tab-panel report-detail-panel-wrap" id="report-export-panel">
+            <section class="panel wide">
+              <div class="panel-header">
+                <h3>Detalle de facturas de gastos</h3>
+                <div class="button-row compact">
+                  <button class="ghost-button small hidden" id="toggle-report-filters" type="button">Filtros</button>
+                  <button class="ghost-button small" data-view-target="invoices" type="button">Ver todas</button>
+                  <button class="ghost-button small" id="export-csv">Exportar Excel</button>
+                  <button class="ghost-button small" id="export-pdf">Exportar PDF</button>
+                  <button class="primary-button small" id="print-report" type="button">Imprimir</button>
+                </div>
+              </div>
+              <section class="report-filter-panel hidden" id="legacy-report-filter-panel">
+                <div class="filters report-filters">
+                  <label>Tipo de reporte
+                    <select id="report-type">
+                      <option value="monthly">Gastos mensuales</option>
+                      <option value="provider">Por proveedor</option>
+                      <option value="category">Por categoria</option>
+                      <option value="status">Por estado</option>
+                      <option value="range">Por rango de fechas</option>
+                    </select>
+                  </label>
+                  <label>Periodo
+                    <select id="report-period">
+                      <option value="custom">Personalizado</option>
+                      <option value="current-month">Mes actual</option>
+                      <option value="current-year">Año actual</option>
+                    </select>
+                  </label>
+                  <label>Fecha inicio <input id="report-from" type="date" /></label>
+                  <label>Fecha fin <input id="report-to" type="date" /></label>
+                  <label>Proveedor <input id="report-provider" placeholder="Todos" /></label>
+                  <label>Estado
+                    <select id="report-status">
+                      <option>Todos los estados</option>
+                      <option>Validado</option>
+                      <option>Pendiente</option>
+                      <option>Observado</option>
+                      <option>Duplicado</option>
+                    </select>
+                  </label>
+                  <button class="ghost-button" id="report-clear" type="button">Limpiar</button>
+                  <button class="primary-button" id="report-apply" type="button">Filtrar</button>
+                </div>
+              </section>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Fecha</th>
+                      <th>N° Factura</th>
+                      <th>Proveedor</th>
+                      <th>Categoria</th>
+                      <th>Total</th>
+                      <th>Estado</th>
+                      <th>Accion</th>
+                    </tr>
+                  </thead>
+                  <tbody id="report-table"></tbody>
+                </table>
+              </div>
+            </section>
+          </div>
+        </section>
+      </section>
+
+      <section id="users" class="view users-view">
+        <div class="user-metrics invoice-metrics" id="user-metrics"></div>
+        <section class="invoices-panel users-panel">
+            <div class="invoice-toolbar user-filters">
+              <label class="invoice-search user-search-box">
+                <input id="user-search" placeholder="Buscar por nombre, DNI o correo" />
+                <span>Buscar</span>
+              </label>
+              <label>
+                <span>Tipo de rol</span>
+                <select id="user-role-filter">
+                  <option>Todos</option>
+                  <option>Administrador</option>
+                  <option>Contador</option>
+                </select>
+              </label>
+              <label>
+                <span>Estado</span>
+                <select id="user-status-filter">
+                  <option>Todos</option>
+                  <option>Activo</option>
+                  <option>Inactivo</option>
+                </select>
+              </label>
+              <label>
+                <span>Ultimo acceso</span>
+                <select id="user-access-filter">
+                  <option value="Todos">Todos</option>
+                  <option value="Hoy">Hoy</option>
+                  <option value="7">Ultimos 7 dias</option>
+                  <option value="30">Ultimos 30 dias</option>
+                  <option value="Sin acceso">Sin acceso</option>
+                </select>
+              </label>
+              <button class="ghost-button" id="clear-user-filters" type="button">Limpiar</button>
+              <button class="ghost-button invoice-selected-delete-button" id="user-delete-selected" type="button" disabled>
+                <img class="invoice-button-icon" src="assets/img/eliminar.png" alt="" />
+                <span>Eliminar seleccionadas</span>
+              </button>
+            </div>
+            <div class="table-wrap">
+              <table class="users-table">
+                <thead>
+                  <tr>
+                    <th><input id="user-select-all" type="checkbox" aria-label="Seleccionar todo" /></th>
+                    <th>Foto</th>
+                    <th>Codigo</th>
+                    <th>DNI</th>
+                    <th>Nombre</th>
+                    <th>Apellido</th>
+                    <th>Usuario</th>
+                    <th>Rol</th>
+                    <th>Estado</th>
+                    <th>Ultimo acceso</th>
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody id="user-table"></tbody>
+              </table>
+            </div>
+          </section>
+          <button class="primary-button user-floating-add" id="open-user-modal" type="button" title="Nuevo usuario" aria-label="Nuevo usuario">+</button>
+      </section>
+
+      <section id="trash" class="view trash-view">
+        <div class="trash-metrics">
+          <article class="trash-metric purple">
+            <span class="trash-metric-icon"><img src="assets/img/facturas_eliminadas.png" alt="" /></span>
+            <div>
+              <strong id="trash-count">0</strong>
+              <span>Facturas eliminadas</span>
+              <small>En la papelera</small>
+            </div>
+          </article>
+          <article class="trash-metric green">
+            <span class="trash-metric-icon"><img src="assets/img/Restauradas.png" alt="" /></span>
+            <div>
+              <strong id="trash-restored-count">0</strong>
+              <span>Restauradas</span>
+              <small>Ultimos 30 dias</small>
+            </div>
+          </article>
+          <article class="trash-metric red">
+            <span class="trash-metric-icon"><img src="assets/img/eliminadas_definitivamente.png" alt="" /></span>
+            <div>
+              <strong id="trash-destroyed-count">0</strong>
+              <span>Eliminadas definitivamente</span>
+              <small>Ultimos 30 dias</small>
+            </div>
+          </article>
+          <article class="trash-metric orange">
+            <span class="trash-metric-icon"><img src="assets/img/papelera.png" alt="" /></span>
+            <div>
+              <strong id="trash-size-total">0 MB</strong>
+              <span>Tamano ocupado</span>
+              <small>En la papelera</small>
+            </div>
+          </article>
+        </div>
+
+        <section class="trash-panel">
+          <div class="trash-toolbar">
+            <label class="trash-search">
+              <input id="trash-search" placeholder="Buscar por numero, proveedor o RUC..." />
+              <span>Buscar</span>
+            </label>
+            <label>Fecha de eliminacion
+              <select id="trash-date-filter">
+                <option value="all">Todas</option>
+                <option value="today">Hoy</option>
+                <option value="week">Ultimos 7 dias</option>
+                <option value="month">Ultimos 30 dias</option>
+              </select>
+            </label>
+            <label>Proveedor
+              <select id="trash-provider-filter">
+                <option value="all">Todos</option>
+              </select>
+            </label>
+            <label>Eliminado por
+              <select id="trash-user-filter">
+                <option value="all">Todos</option>
+              </select>
+            </label>
+            <button class="ghost-button trash-empty-button" id="trash-empty-button" type="button">
+              <img class="trash-button-icon" src="assets/img/vaciar_papelera.png" alt="" />
+              <span>Vaciar papelera</span>
+            </button>
+          </div>
+
+          <div class="trash-table-wrap">
+            <table class="trash-table">
+              <thead>
+                <tr>
+                  <th><input id="trash-select-all" type="checkbox" aria-label="Seleccionar todo" /></th>
+                  <th>ID factura</th>
+                  <th>Proveedor</th>
+                  <th>RUC</th>
+                  <th>Fecha de factura</th>
+                  <th>Fecha de eliminacion</th>
+                  <th>Eliminado por</th>
+                  <th>Tamano</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="trash-table"></tbody>
+            </table>
+          </div>
+
+          <div class="trash-footer">
+            <span id="trash-result-count">Mostrando 0 resultados</span>
+            <div class="trash-pagination" aria-label="Paginacion">
+            </div>
+          </div>
+        </section>
+
+        <aside class="trash-tip">
+          <strong>Sabias que?</strong>
+          <span>Las facturas en la papelera se conservan por 30 dias. Despues de ese tiempo, se eliminan automaticamente.</span>
+        </aside>
+      </section>
+
+      <section id="settings" class="view settings-view">
+        <div class="settings-heading app-section-header">
+          <div>
+            <h2>Configuracion del sistema</h2>
+            <p>Administra los parametros y opciones generales del sistema.</p>
+          </div>
+        </div>
+
+        <div class="settings-tabs" role="tablist" aria-label="Secciones de configuracion">
+          <button class="settings-tab active" type="button" data-settings-tab="company">Empresa</button>
+          <button class="settings-tab" type="button" data-settings-tab="system">Sistema</button>
+          <button class="settings-tab" type="button" data-settings-tab="security">Seguridad</button>
+          <button class="settings-tab" type="button" data-settings-tab="roles">Roles y permisos</button>
+          <button class="settings-tab" type="button" data-settings-tab="backups">Respaldos</button>
+          <button class="settings-tab" type="button" data-settings-tab="about">Acerca de</button>
+        </div>
+
+        <div class="settings-dashboard-grid">
+          <section class="settings-card settings-company-card settings-tab-panel active" data-settings-panel="company">
+            <div class="settings-card-title">
+              <span class="settings-icon purple">E</span>
+              <h3>Datos de la empresa</h3>
+            </div>
+            <form class="settings-form-vertical" id="settings-form">
+              <div class="company-logo-field">
+                <div class="company-logo-preview" id="company-logo-preview">
+                  <span>Logo</span>
+                </div>
+                <div class="company-logo-actions">
+                  <strong>Logo de la empresa</strong>
+                  <small>PNG, JPG o SVG. Recomendado: imagen cuadrada.</small>
+                  <div>
+                    <button class="ghost-button" id="company-logo-button" type="button">Seleccionar logo</button>
+                    <button class="ghost-button danger" id="company-logo-remove" type="button">Quitar</button>
+                  </div>
+                </div>
+                <input id="settings-logo-file" type="file" accept="image/png,image/jpeg,image/svg+xml,image/webp" hidden />
+                <input id="settings-company-logo" type="hidden" />
+              </div>
+              <label>Nombre comercial <input id="settings-company" placeholder="PYME S.A.C." /></label>
+              <label>RUC <input id="settings-ruc" maxlength="11" placeholder="20123456789" /></label>
+              <label>Direccion <input id="settings-address" placeholder="Av. Los Emprendedores 123, Lima" /></label>
+              <label>Correo electronico <input id="settings-email" type="email" placeholder="contacto@pyme.pe" /></label>
+              <label>Telefono <input id="settings-phone" placeholder="987 654 321" /></label>
+              <button class="primary-button settings-save-button" type="submit">Guardar cambios</button>
+            </form>
+            <div class="process-state" id="settings-state">Solo administradores pueden cambiar esta informacion.</div>
+          </section>
+
+          <section class="settings-card settings-tab-panel" data-settings-panel="backups">
+            <div class="settings-card-title">
+              <span class="settings-icon green">R</span>
+              <h3>Respaldo y restauracion</h3>
+            </div>
+            <div class="settings-field-list">
+              <label class="settings-inline-row">Respaldo automatico
+                <span class="toggle-field"><input id="settings-auto-backup" type="checkbox" checked /><span></span>Activado</span>
+              </label>
+              <label>Frecuencia
+                <select id="settings-backup-frequency">
+                  <option value="Diario">Diario</option>
+                  <option value="Semanal">Semanal</option>
+                  <option value="Mensual">Mensual</option>
+                </select>
+              </label>
+              <label>Hora del respaldo <input id="settings-backup-time" type="time" value="22:00" /></label>
+              <label>Ubicacion de respaldos <input id="settings-backup-path" value="C:\\FactuIA\\Backups" /></label>
+            </div>
+            <div class="backup-status-box">
+              <strong>Ultimo respaldo:</strong> 08/07/2026 22:00<br />
+              <span>Estado: Correcto</span>
+            </div>
+            <div class="settings-actions-row">
+              <button class="ghost-button success" id="export-backup" type="button">Crear respaldo ahora</button>
+              <button class="ghost-button" id="restore-backup-button" type="button">Restaurar respaldo</button>
+              <input class="hidden-input" id="restore-backup-file" type="file" accept=".json,application/json" />
+            </div>
+          </section>
+
+          <section class="settings-card settings-tab-panel" data-settings-panel="security">
+            <div class="settings-card-title">
+              <span class="settings-icon purple">S</span>
+              <h3>Seguridad</h3>
+            </div>
+            <form class="settings-password-form" id="password-form">
+              <label>Contrasena actual <input id="current-password" type="password" autocomplete="current-password" /></label>
+              <label>Nueva contrasena <input id="new-password" type="password" autocomplete="new-password" /></label>
+              <button class="ghost-button full" type="submit">Cambiar contrasena</button>
+            </form>
+            <div class="settings-field-list security-options">
+              <label>Tiempo de sesion
+                <select id="settings-session-timeout">
+                  <option value="15 minutos">15 minutos</option>
+                  <option value="30 minutos">30 minutos</option>
+                  <option value="60 minutos">60 minutos</option>
+                </select>
+              </label>
+              <label class="settings-inline-row">Permitir recuperacion de cuenta
+                <span class="toggle-field"><input id="settings-account-recovery" type="checkbox" checked /><span></span>Activado</span>
+              </label>
+              <label>Intentos de inicio de sesion
+                <select id="settings-login-attempts">
+                  <option value="3">3 intentos</option>
+                  <option value="5">5 intentos</option>
+                  <option value="10">10 intentos</option>
+                </select>
+              </label>
+              <label class="settings-inline-row">Bloqueo automatico
+                <span class="toggle-field"><input id="settings-auto-lock" type="checkbox" checked /><span></span>Activado</span>
+              </label>
+            </div>
+            <div class="process-state" id="security-state">Mantener copias de seguridad evita perdida de informacion.</div>
+          </section>
+
+          <section class="settings-card settings-tab-panel" data-settings-panel="system">
+            <div class="settings-card-title">
+              <span class="settings-icon blue">P</span>
+              <h3>Parametros del sistema</h3>
+            </div>
+            <div class="settings-field-list">
+              <label>Formato de fecha
+                <select id="settings-date-format">
+                  <option value="DD/MM/YYYY">DD/MM/YYYY</option>
+                  <option value="YYYY-MM-DD">YYYY-MM-DD</option>
+                </select>
+              </label>
+              <label>Moneda
+                <select id="settings-currency">
+                  <option value="PEN">Soles (S/)</option>
+                  <option value="USD">Dolares ($)</option>
+                </select>
+              </label>
+              <label>IGV % <input id="settings-igv" type="number" min="0" max="100" value="18" /></label>
+              <label>Limite de tamano de archivo
+                <span class="input-addon"><input id="settings-max-file-size" type="number" min="1" value="20" /><span>MB</span></span>
+              </label>
+              <label>Tipos de archivo permitidos
+                <div class="file-chip-list" aria-label="Tipos permitidos">
+                  <span>PDF</span><span>JPG</span><span>PNG</span>
+                </div>
+              </label>
+            </div>
+          </section>
+
+          <section class="settings-card settings-tab-panel permissions-panel" id="roles-permissions-panel" data-settings-panel="roles">
+            <div class="settings-card-title">
+              <span class="settings-icon purple">R</span>
+              <h3>Roles y permisos</h3>
+            </div>
+            <div class="available-users-panel">
+              <div class="panel-header compact-header">
+                <h3>Usuarios disponibles</h3>
+                <button class="ghost-button small" id="toggle-role-builder" type="button">Crear nuevo actor</button>
+              </div>
+              <div id="available-role-users"></div>
+              <form class="role-builder hidden" id="role-builder-form">
+                <label>Nombre del actor o rol <input id="role-builder-name" placeholder="Ejemplo: Operario" /></label>
+                <div class="role-permission-checks" id="role-permission-checks"></div>
+                <div class="modal-actions">
+                  <button class="ghost-button" id="cancel-role-builder" type="button">Cancelar</button>
+                  <button class="primary-button" type="submit">Guardar actor</button>
+                </div>
+                <div class="process-state hidden" id="role-builder-state"></div>
+              </form>
+            </div>
+            <div class="permissions-layout">
+              <div class="permissions-main">
+                <h3>Permisos por rol</h3>
+                <div id="permissions-table"></div>
+              </div>
+              <aside class="role-info">
+                <strong>Informacion</strong>
+                <p>El Administrador tiene acceso completo a todas las funcionalidades del sistema.</p>
+                <p>El Contador puede procesar facturas, validarlas, consultarlas y generar reportes, pero no puede modificar configuracion ni gestionar usuarios.</p>
+              </aside>
+            </div>
+          </section>
+
+          <section class="settings-card settings-tab-panel" data-settings-panel="backups">
+            <div class="settings-card-title">
+              <span class="settings-icon orange">B</span>
+              <h3>Gestionar respaldos</h3>
+            </div>
+            <div class="settings-table-wrap">
+              <table class="settings-backup-table">
+                <thead>
+                  <tr><th>Fecha y hora</th><th>Tamano</th><th>Tipo</th><th>Acciones</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>08/07/2026 22:00</td><td>25.4 MB</td><td>Automatico</td><td><button class="mini-action backup-download" type="button">Bajar</button><button class="mini-action danger" type="button">Borrar</button></td></tr>
+                  <tr><td>07/07/2026 22:00</td><td>24.8 MB</td><td>Automatico</td><td><button class="mini-action backup-download" type="button">Bajar</button><button class="mini-action danger" type="button">Borrar</button></td></tr>
+                  <tr><td>06/07/2026 22:00</td><td>24.1 MB</td><td>Automatico</td><td><button class="mini-action backup-download" type="button">Bajar</button><button class="mini-action danger" type="button">Borrar</button></td></tr>
+                  <tr><td>05/07/2026 22:00</td><td>23.7 MB</td><td>Manual</td><td><button class="mini-action backup-download" type="button">Bajar</button><button class="mini-action danger" type="button">Borrar</button></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <button class="ghost-button settings-outline-button" type="button">Ver todos los respaldos</button>
+          </section>
+
+          <section class="settings-card settings-about-card settings-tab-panel" data-settings-panel="about">
+            <div class="settings-card-title">
+              <span class="settings-icon purple">I</span>
+              <h3>Acerca del sistema</h3>
+            </div>
+            <dl class="about-list">
+              <div><dt>Nombre del sistema</dt><dd>FactuIA</dd></div>
+              <div><dt>Version</dt><dd>1.0.0</dd></div>
+              <div><dt>Desarrollador</dt><dd>Kevin Paucar</dd></div>
+              <div><dt>Tecnologia</dt><dd>Node.js, SQLite, OCR</dd></div>
+              <div><dt>Descripcion</dt><dd>Sistema de gestion y analisis de facturas con inteligencia artificial.</dd></div>
+            </dl>
+            <div class="about-watermark"><span>IA</span></div>
+          </section>
+        </div>
+      </section>
+    </main>
+
+    <script src="assets/js/app/state.js?v=users-match-invoices-1"></script>
+    <script src="assets/js/app/api.js?v=admin-views-1"></script>
+    <script src="assets/js/app/navigation.js?v=frontend-split-1"></script>
+    <script src="assets/js/app/extraction.js?v=extraccion-1"></script>
+    <script src="assets/js/app/preview.js?v=shared-document-viewer-5"></script>
+    <script src="assets/js/app/invoices.js?v=invoice-edit-label-1"></script>
+    <script src="assets/js/app/trash.js?v=trash-status-sync-1"></script>
+    <script src="assets/js/app/invoice-drafts.js?v=frontend-split-5"></script>
+    <script src="assets/js/app/invoice-validation.js?v=validate-label-1"></script>
+    <script src="assets/js/app/dashboard.js?v=reports-year-chart-1"></script>
+    <script src="assets/js/app/providers.js?v=frontend-split-2"></script>
+    <script src="assets/js/app/users.js?v=users-edit-password-1"></script>
+    <script src="assets/js/app/settings.js?v=users-settings-roles-1"></script>
+    <script src="assets/js/app/reports.js?v=render-isolation-1"></script>
+    <script src="assets/js/app/report-export.js?v=excel-xlsx-fills-1"></script>
+    <script src="assets/js/app/validation-events.js?v=shared-document-viewer-2"></script>
+    <script src="assets/js/app/invoice-events.js?v=trash-status-sync-1"></script>
+    <script src="assets/js/app/events.js?v=dashboard-report-actions-1"></script>
+    <script src="assets/js/app/auth.js?v=admin-views-1"></script>
+    <script src="assets/js/app/main.js?v=session-loading-2"></script>
+  </body>
+</html>
